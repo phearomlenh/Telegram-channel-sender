@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram Channel Publisher</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0F1117;
+  --surface:   #161B27;
+  --surface2:  #1C2333;
+  --surface3:  #212840;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #E8EAF0;
+  --text2:     #8B93A8;
+  --text3:     #565F77;
+  --blue:      #4B8EF8;
+  --blue-dim:  rgba(75,142,248,0.12);
+  --blue-glow: rgba(75,142,248,0.25);
+  --green:     #34D399;
+  --green-dim: rgba(52,211,153,0.12);
+  --red:       #F87171;
+  --red-dim:   rgba(248,113,113,0.12);
+  --amber:     #FBBF24;
+  --amber-dim: rgba(251,191,36,0.12);
+  --purple:    #A78BFA;
+  --purple-dim:rgba(167,139,250,0.12);
+  --teal:      #2DD4BF;
+  --coral:     #FB923C;
+  --radius-sm: 6px;
+  --radius:    10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --font: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --shadow: 0 1px 3px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.5);
+}
+
+html { background: var(--bg); }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 16px 60px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ── Topbar ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563EB 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px rgba(75,142,248,.3), 0 4px 12px rgba(37,99,235,.35);
+  flex-shrink: 0;
+}
+
+.brand-icon i {
+  font-size: 24px;
+  color: #fff;
+}
+
+.brand-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+  letter-spacing: 0.01em;
+}
+
+.conn-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 40px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: border-color .2s, background .2s, color .2s;
+  user-select: none;
+}
+
+.conn-pill:hover { border-color: var(--border2); background: var(--surface2); }
+
+.conn-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text3);
+  transition: background .3s, box-shadow .3s;
+  flex-shrink: 0;
+}
+
+.conn-pill.connected { border-color: rgba(52,211,153,.35); background: var(--green-dim); color: var(--green); }
+.conn-pill.connected .conn-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+/* ── Cards ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: border-color .2s;
+}
+
+.card:focus-within { border-color: var(--border2); }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.card-head-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.head-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.head-icon i { font-size: 15px; color: var(--text2); }
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.card-body { padding: 20px; }
+
+/* ── Fields ── */
+.field { margin-bottom: 16px; }
+.field:last-child { margin-bottom: 0; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  margin-bottom: 6px;
+  letter-spacing: .02em;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="datetime-local"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  -webkit-appearance: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime-local"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--text3); }
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238B93A8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+select option { background: var(--surface2); }
+
+.hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 5px;
+}
+
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* ── Token input ── */
+.token-wrap { position: relative; }
+.token-wrap input { padding-right: 44px; font-family: var(--mono); font-size: 13px; }
+.token-eye {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 44px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text3); border: none; background: none;
+  transition: color .15s;
+}
+.token-eye:hover { color: var(--text2); }
+
+/* ── Quick prefix tags ── */
+.tags-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 40px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .15s;
+  user-select: none;
+  line-height: 1.3;
+}
+
+.tag i { font-size: 13px; }
+
+.tag-blue   { background: var(--blue-dim);   color: var(--blue);   border-color: rgba(75,142,248,.25); }
+.tag-blue:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+.tag-teal   { background: var(--green-dim);  color: var(--teal);   border-color: rgba(45,212,191,.25); }
+.tag-teal:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+
+.tag-purple { background: var(--purple-dim); color: var(--purple); border-color: rgba(167,139,250,.25); }
+.tag-purple:hover { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+.tag-amber  { background: var(--amber-dim);  color: var(--amber);  border-color: rgba(251,191,36,.25); }
+.tag-amber:hover { background: var(--amber); color: #000; border-color: var(--amber); }
+
+.tag-coral  { background: rgba(251,146,60,.12); color: var(--coral); border-color: rgba(251,146,60,.25); }
+.tag-coral:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+
+/* ── Composer ── */
+.composer {
+  min-height: 160px;
+  resize: vertical;
+  font-size: 14px;
+  line-height: 1.7;
+  font-family: var(--font);
+}
+
+.composer-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.fmt-btns { display: flex; gap: 4px; }
+
+.fmt-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text2);
+  transition: background .1s, color .1s, border-color .1s;
+  font-family: var(--font);
+  line-height: 1;
+}
+
+.fmt-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
+.fmt-btn.mono { font-family: var(--mono); font-size: 12px; }
+
+.char-ct {
+  font-size: 11px;
+  color: var(--text3);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--mono);
+}
+
+.char-ct.warn { color: var(--amber); }
+.char-ct.over { color: var(--red); }
+
+/* ── Preview ── */
+.preview-label {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-weight: 600;
+}
+
+.preview-label i { font-size: 13px; }
+
+.preview-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+  min-height: 64px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.preview-empty { color: var(--text3); font-style: italic; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ── Options grid ── */
+.opts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+
+.opt:hover { border-color: var(--border2); background: var(--surface3); }
+.opt.on { border-color: rgba(75,142,248,.4); background: var(--blue-dim); }
+
+.opt-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.opt-label i { font-size: 15px; }
+.opt.on .opt-label { color: var(--blue); }
+
+/* ── Toggle ── */
+.tog {
+  width: 32px;
+  height: 18px;
+  border-radius: 18px;
+  background: var(--surface3);
+  position: relative;
+  flex-shrink: 0;
+  border: 1px solid var(--border2);
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.tog.on { background: var(--blue); border-color: var(--blue); }
+
+.tog::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transition: left .18s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 1px 3px rgba(0,0,0,.4);
+}
+
+.tog.on::after { left: 16px; }
+
+/* ── Schedule section ── */
+.schedule-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+
+.schedule-trigger:hover { border-color: var(--border2); background: var(--surface3); }
+.schedule-trigger.active { border-color: rgba(167,139,250,.4); background: var(--purple-dim); }
+
+.sched-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+}
+
+.sched-left i { font-size: 16px; }
+.schedule-trigger.active .sched-left { color: var(--purple); }
+
+.sched-arrow {
+  font-size: 16px;
+  color: var(--text3);
+  transition: transform .2s;
+}
+.schedule-trigger.active .sched-arrow { transform: rotate(180deg); color: var(--purple); }
+
+.schedule-panel {
+  display: none;
+  padding: 16px 0 0;
+  animation: slideDown .18s ease;
+}
+
+.schedule-panel.open { display: block; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.schedule-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.schedule-preview i { font-size: 14px; color: var(--purple); flex-shrink: 0; }
+#schedulePreviewText { font-family: var(--mono); font-size: 12px; }
+
+.pending-schedules {
+  margin-top: 12px;
+}
+
+.pending-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: 8px;
+}
+
+.pending-list { display: flex; flex-direction: column; gap: 6px; }
+
+.pending-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+}
+
+.pending-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--purple);
+  white-space: nowrap;
+  background: var(--purple-dim);
+  padding: 2px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.pending-msg {
+  flex: 1;
+  color: var(--text2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pending-status {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.pending-status.waiting { background: var(--amber-dim); color: var(--amber); }
+.pending-status.sending { background: var(--blue-dim); color: var(--blue); }
+.pending-status.sent    { background: var(--green-dim); color: var(--green); }
+
+.pending-cancel {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color .15s, background .15s;
+}
+
+.pending-cancel:hover { color: var(--red); background: var(--red-dim); }
+
+/* ── Dropzone ── */
+.dropzone {
+  border: 1.5px dashed var(--border2);
+  border-radius: var(--radius-lg);
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  background: var(--surface2);
+  transition: border-color .15s, background .15s;
+}
+
+.dropzone.over,
+.dropzone:hover { border-color: var(--blue); background: var(--blue-dim); }
+
+.dropzone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+.dz-icon { font-size: 30px; color: var(--blue); margin-bottom: 10px; opacity: .7; }
+.dz-text { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.dz-text strong { color: var(--text); font-weight: 600; }
+.dz-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+.flist { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+
+.frow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  transition: border-color .15s;
+}
+
+.frow:hover { border-color: var(--border2); }
+
+.ficon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.fi-img { background: var(--blue-dim); color: var(--blue); }
+.fi-vid { background: var(--purple-dim); color: var(--purple); }
+.fi-aud { background: var(--green-dim); color: var(--teal); }
+.fi-doc { background: var(--amber-dim); color: var(--amber); }
+.fi-zip { background: rgba(251,146,60,.12); color: var(--coral); }
+.fi-gen { background: var(--surface3); color: var(--text2); }
+
+.fname { flex: 1; font-size: 13px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fsize { font-size: 11px; color: var(--text3); white-space: nowrap; font-family: var(--mono); }
+
+.frm {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: color .15s, background .15s;
+}
+
+.frm:hover { color: var(--red); background: var(--red-dim); }
+
+/* ── Progress ── */
+.prog {
+  height: 3px;
+  border-radius: 3px;
+  background: var(--border);
+  overflow: hidden;
+  margin-top: 12px;
+  display: none;
+}
+
+.prog-bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Notification ── */
+.notif {
+  display: none;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 12px;
+  animation: fadeUp .2s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.notif.ok  { background: var(--green-dim); border: 1px solid rgba(52,211,153,.35); color: var(--green); }
+.notif.err { background: var(--red-dim);   border: 1px solid rgba(248,113,113,.35); color: var(--red); }
+.notif.info{ background: var(--blue-dim);  border: 1px solid rgba(75,142,248,.35);  color: var(--blue); }
+.notif i   { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+
+.btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #3B82F6, #2563EB);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: opacity .15s, transform .1s, box-shadow .2s;
+  box-shadow: 0 4px 14px rgba(37,99,235,.4);
+  letter-spacing: .01em;
+}
+
+.btn-primary:hover { opacity: .92; box-shadow: 0 6px 20px rgba(37,99,235,.5); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-primary i { font-size: 18px; }
+
+.btn-primary.schedule-mode {
+  background: linear-gradient(135deg, #7C3AED, #6D28D9);
+  box-shadow: 0 4px 14px rgba(109,40,217,.4);
+}
+
+.btn-primary.schedule-mode:hover { box-shadow: 0 6px 20px rgba(109,40,217,.5); }
+
+.btn-sec {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .12s, color .12s, border-color .12s;
+}
+
+.btn-sec:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+.btn-sec:disabled { opacity: .4; cursor: not-allowed; }
+.btn-sec i { font-size: 16px; }
+
+/* ── Spinning loader ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinning { animation: spin .7s linear infinite; display: inline-block; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .row2, .opts-grid, .schedule-grid { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .actions { flex-direction: column; }
+  .btn-sec { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ── Top bar ── -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="ti ti-brand-telegram"></i>
+      </div>
+      <div>
+        <div class="brand-title">Channel Publisher</div>
+        <div class="brand-sub">Broadcast to your Telegram channel</div>
+      </div>
+    </div>
+    <div class="conn-pill" id="connBadge" title="Connection status" role="status" aria-live="polite">
+      <span class="conn-dot" id="connDot"></span>
+      <span id="connText">Not connected</span>
+    </div>
+  </div>
+
+  <!-- ── Bot credentials ── -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="head-icon"><i class="ti ti-key"></i></div>
+        <span class="card-title">Bot credentials</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row2">
+        <div class="field">
+          <label for="tok">Bot token</label>
+          <div class="token-wrap">
+            <input type="password" id="tok" placeholder="123456789:AAF…" autocomplete="off">
+            <button class="token-eye" id="tokEye" type="button" title="Show / hide token" tabindex="-1">
+              <i class="ti ti-eye" id="tokEyeIco"></i>
+            </button>
+          </div>
+          <div class="hint">Get this from <strong>@BotFather</strong> on Telegram</div>
+        </div>
+        <div class="field">
+          <label for="chid">Channel ID or username</label>
+          <input type="text" id="chid" placeholder="@yourchannel or -100…">
+          <div class="hint">Public: @name &nbsp;·&nbsp; Private: -100…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Compose post ── -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="head-icon"><i class="ti ti-edit"></i></div>
+        <span class="card-title">Compose post</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Quick prefixes -->
+      <div class="field" style="margin-bottom:14px">
+        <label>Quick prefix</label>
+        <div class="tags-row">
+          <span class="tag tag-blue"   data-t="📢 *Announcement*&#10;&#10;"><i class="ti ti-speakerphone"></i>Announcement</span>
+          <span class="tag tag-teal"   data-t="✅ *Update*&#10;&#10;"><i class="ti ti-circle-check"></i>Update</span>
+          <span class="tag tag-purple" data-t="🚀 *New release*&#10;&#10;"><i class="ti ti-rocket"></i>New release</span>
+          <span class="tag tag-amber"  data-t="⚠️ *Important*&#10;&#10;"><i class="ti ti-alert-triangle"></i>Important</span>
+          <span class="tag tag-coral"  data-t="🔴 *Urgent*&#10;&#10;"><i class="ti ti-urgent"></i>Urgent</span>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="field">
+        <label for="body">Message body</label>
+        <textarea class="composer" id="body"
+          placeholder="Write your channel post here…&#10;&#10;Supports *bold*, _italic_, `inline code`, and [links](https://example.com)"></textarea>
+        <div class="composer-toolbar">
+          <div class="fmt-btns" aria-label="Formatting shortcuts">
+            <button class="fmt-btn" title="Bold" onclick="wrap('*','*')"><strong>B</strong></button>
+            <button class="fmt-btn" title="Italic" onclick="wrap('_','_')"><em>I</em></button>
+            <button class="fmt-btn mono" title="Code" onclick="wrap('`','`')">`&thinsp;`</button>
+            <button class="fmt-btn" title="Strikethrough" onclick="wrap('~','~')" style="text-decoration:line-through;font-size:12px">S</button>
+            <button class="fmt-btn" title="Spoiler" onclick="wrap('||','||')" style="font-size:11px;letter-spacing:-.5px">||</button>
+          </div>
+          <span class="char-ct" id="cc">0 / 4096</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Preview -->
+      <div>
+        <div class="preview-label"><i class="ti ti-eye"></i>Live preview</div>
+        <div class="preview-box preview-empty" id="preview">Your post will appear here as you type…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Post settings ── -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="head-icon"><i class="ti ti-settings"></i></div>
+        <span class="card-title">Post settings</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="opts-grid" style="margin-bottom:16px">
+        <div class="opt" id="silentOpt">
+          <div class="opt-label"><i class="ti ti-bell-off"></i>Silent post</div>
+          <button class="tog" id="silentTog" role="switch" aria-checked="false" aria-label="Toggle silent post"></button>
+        </div>
+        <div class="opt" id="previewOpt">
+          <div class="opt-label"><i class="ti ti-link-off"></i>No link preview</div>
+          <button class="tog" id="previewTog" role="switch" aria-checked="false" aria-label="Toggle link preview"></button>
+        </div>
+        <div class="opt" id="pinOpt">
+          <div class="opt-label"><i class="ti ti-pin"></i>Pin after sending</div>
+          <button class="tog" id="pinTog" role="switch" aria-checked="false" aria-label="Toggle pin message"></button>
+        </div>
+        <div class="opt" id="protectOpt">
+          <div class="opt-label"><i class="ti ti-shield-lock"></i>Protect content</div>
+          <button class="tog" id="protectTog" role="switch" aria-checked="false" aria-label="Toggle content protection"></button>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:0">
+        <label for="parseMode">Parse mode</label>
+        <select id="parseMode">
+          <option value="Markdown">Markdown — *bold*  _italic_  `code`</option>
+          <option value="HTML">HTML — &lt;b&gt;bold&lt;/b&gt;  &lt;i&gt;italic&lt;/i&gt;</option>
+          <option value="">None — plain text</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Schedule send ── -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="head-icon"><i class="ti ti-calendar-time"></i></div>
+        <span class="card-title">Schedule send</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Toggle row -->
+      <div class="schedule-trigger" id="schedTrigger">
+        <div class="sched-left">
+          <i class="ti ti-clock"></i>
+          <span id="schedTriggerLabel">Schedule for later</span>
+        </div>
+        <i class="ti ti-chevron-down sched-arrow" id="schedArrow"></i>
+      </div>
+
+      <!-- Panel -->
+      <div class="schedule-panel" id="schedPanel">
+        <div class="schedule-grid">
+          <div class="field" style="margin-bottom:0">
+            <label for="schedDate">Date</label>
+            <input type="date" id="schedDate">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label for="schedTime">Time</label>
+            <input type="time" id="schedTime">
+          </div>
+        </div>
+
+        <div class="schedule-preview" id="schedPreview" style="display:none;margin-top:12px">
+          <i class="ti ti-calendar-event"></i>
+          <span id="schedulePreviewText">—</span>
+        </div>
+
+        <!-- Pending list -->
+        <div class="pending-schedules" id="pendingSchedules" style="display:none">
+          <div class="pending-label">Queued posts</div>
+          <div class="pending-list" id="pendingList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Attachments ── -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-left">
+        <div class="head-icon"><i class="ti ti-paperclip"></i></div>
+        <span class="card-title">Attachments</span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="dropzone" id="dz">
+        <input type="file" id="fi" multiple accept="*/*" aria-label="Upload files">
+        <div class="dz-icon"><i class="ti ti-cloud-upload"></i></div>
+        <div class="dz-text"><strong>Drop files here</strong> or click to browse</div>
+        <div class="dz-sub">Images · Videos · Audio · Documents — max 50 MB each</div>
+      </div>
+      <div class="flist" id="fl"></div>
+    </div>
+  </div>
+
+  <!-- ── Progress / Notification ── -->
+  <div class="prog" id="pg"><div class="prog-bar" id="pgb"></div></div>
+  <div class="notif" id="notif">
+    <i class="ti" id="nicon"></i>
+    <span id="nmsg"></span>
+  </div>
+
+  <!-- ── Actions ── -->
+  <div class="actions">
+    <button class="btn-sec" id="testBtn">
+      <i class="ti ti-wifi"></i>
+      Verify connection
+    </button>
+    <button class="btn-primary" id="sendBtn">
+      <i class="ti ti-send" id="sendIcon"></i>
+      <span id="sendLbl">Publish now</span>
+    </button>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── Utility ──────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+let files = [];
+let opts = { silent: false, noPreview: false, pin: false, protect: false };
+let scheduleOpen = false;
+let scheduled = [];   // {id, text, files, date, token, chatId, opts, parseMode, timer}
+
+// ── Token eye toggle ──────────────────────────────────────
+$('tokEye').addEventListener('click', () => {
+  const inp = $('tok');
+  const ico = $('tokEyeIco');
+  const isPass = inp.type === 'password';
+  inp.type = isPass ? 'text' : 'password';
+  ico.className = isPass ? 'ti ti-eye-off' : 'ti ti-eye';
+});
+
+// ── Character counter ─────────────────────────────────────
+$('body').addEventListener('input', () => {
+  const v = $('body').value;
+  const cc = $('cc');
+  cc.textContent = `${v.length} / 4096`;
+  cc.className = v.length > 4096 ? 'char-ct over' : v.length > 3500 ? 'char-ct warn' : 'char-ct';
+  const prev = $('preview');
+  if (v) {
+    prev.textContent = v;
+    prev.classList.remove('preview-empty');
+  } else {
+    prev.textContent = 'Your post will appear here as you type…';
+    prev.classList.add('preview-empty');
+  }
+});
+
+// ── Prefix tags ───────────────────────────────────────────
+document.querySelectorAll('.tag').forEach(t => {
+  t.addEventListener('click', () => {
+    const ta = $('body');
+    ta.value = t.dataset.t + ta.value;
+    ta.dispatchEvent(new Event('input'));
+    ta.focus();
+  });
+});
+
+// ── Format wrap ───────────────────────────────────────────
+function wrap(open, close) {
+  const ta = $('body');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.substring(s, e) || 'text';
+  ta.value = ta.value.substring(0, s) + open + sel + close + ta.value.substring(e);
+  ta.setSelectionRange(s + open.length, s + open.length + sel.length);
+  ta.dispatchEvent(new Event('input'));
+  ta.focus();
+}
+window.wrap = wrap;
+
+// ── Option toggles ────────────────────────────────────────
+function mkOpt(togId, optId, key) {
+  const tog = $(togId), opt = $(optId);
+  function toggle() {
+    opts[key] = !opts[key];
+    tog.classList.toggle('on', opts[key]);
+    tog.setAttribute('aria-checked', opts[key]);
+    opt.classList.toggle('on', opts[key]);
+  }
+  tog.addEventListener('click', e => { e.stopPropagation(); toggle(); });
+  opt.addEventListener('click', e => { if (e.target !== tog) toggle(); });
+}
+mkOpt('silentTog', 'silentOpt', 'silent');
+mkOpt('previewTog', 'previewOpt', 'noPreview');
+mkOpt('pinTog', 'pinOpt', 'pin');
+mkOpt('protectTog', 'protectOpt', 'protect');
+
+// ── Schedule panel ────────────────────────────────────────
+const schedTrigger = $('schedTrigger');
+
+schedTrigger.addEventListener('click', () => {
+  scheduleOpen = !scheduleOpen;
+  schedTrigger.classList.toggle('active', scheduleOpen);
+  $('schedPanel').classList.toggle('open', scheduleOpen);
+  updateSendButton();
+});
+
+// Pre-fill date/time with current + 1 hour
+(function setDefaultSchedule() {
+  const d = new Date(Date.now() + 3600000);
+  const pad = n => String(n).padStart(2, '0');
+  $('schedDate').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  $('schedTime').value = `${pad(d.getHours())}:00`;
+  updateSchedulePreview();
+})();
+
+function updateSchedulePreview() {
+  const dateVal = $('schedDate').value;
+  const timeVal = $('schedTime').value;
+  if (!dateVal || !timeVal) { $('schedPreview').style.display = 'none'; return; }
+  const dt = new Date(`${dateVal}T${timeVal}`);
+  if (isNaN(dt)) { $('schedPreview').style.display = 'none'; return; }
+  const now = new Date();
+  const diffMs = dt - now;
+  let rel = '';
+  if (diffMs > 0) {
+    const diffMins = Math.round(diffMs / 60000);
+    if (diffMins < 60) rel = `in ${diffMins} min`;
+    else if (diffMins < 1440) rel = `in ${Math.round(diffMins/60)} hr`;
+    else rel = `in ${Math.round(diffMins/1440)} day${diffMins/1440 >= 2 ? 's' : ''}`;
+  } else {
+    rel = 'in the past — choose a future time';
+  }
+  $('schedulePreviewText').textContent = dt.toLocaleString(undefined, {
+    weekday: 'short', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  }) + `  ·  ${rel}`;
+  $('schedPreview').style.display = 'flex';
+}
+
+$('schedDate').addEventListener('input', updateSchedulePreview);
+$('schedTime').addEventListener('input', updateSchedulePreview);
+
+function updateSendButton() {
+  const btn = $('sendBtn');
+  const ico = $('sendIcon');
+  if (scheduleOpen) {
+    btn.classList.add('schedule-mode');
+    $('sendLbl').textContent = 'Schedule post';
+    ico.className = 'ti ti-calendar-event';
+  } else {
+    btn.classList.remove('schedule-mode');
+    $('sendLbl').textContent = 'Publish now';
+    ico.className = 'ti ti-send';
+  }
+}
+
+// ── Pending schedule list ─────────────────────────────────
+function renderPending() {
+  const wrap = $('pendingSchedules');
+  const list = $('pendingList');
+  if (scheduled.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = '';
+  scheduled.forEach(s => {
+    const item = document.createElement('div');
+    item.className = 'pending-item';
+    const time = s.date.toLocaleString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    const preview = s.text ? s.text.substring(0, 60) + (s.text.length > 60 ? '…' : '') : `${s.files.length} file(s)`;
+    item.innerHTML = `
+      <span class="pending-time">${time}</span>
+      <span class="pending-msg">${preview}</span>
+      <span class="pending-status ${s.status}">${s.status}</span>
+      <button class="pending-cancel" onclick="cancelScheduled('${s.id}')" title="Cancel scheduled post">
+        <i class="ti ti-x"></i>
+      </button>`;
+    list.appendChild(item);
+  });
+}
+
+window.cancelScheduled = function(id) {
+  const idx = scheduled.findIndex(s => s.id === id);
+  if (idx === -1) return;
+  const s = scheduled[idx];
+  if (s.timer) clearTimeout(s.timer);
+  scheduled.splice(idx, 1);
+  renderPending();
+  showNotif('Scheduled post cancelled.', 'info');
+};
+
+// ── Dropzone ──────────────────────────────────────────────
+const dz = $('dz');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); addFiles(e.dataTransfer.files); });
+$('fi').addEventListener('change', e => addFiles(e.target.files));
+
+function addFiles(list) {
+  for (const f of list)
+    if (!files.find(x => x.name === f.name && x.size === f.size)) files.push(f);
+  renderFiles();
+}
+
+function getKind(mime) {
+  if (mime.startsWith('image/')) return 'img';
+  if (mime.startsWith('video/')) return 'vid';
+  if (mime.startsWith('audio/')) return 'aud';
+  if (/(pdf|word|sheet|text|document)/.test(mime)) return 'doc';
+  if (/(zip|rar|7z|tar)/.test(mime)) return 'zip';
+  return 'gen';
+}
+
+function getIco(k) {
+  return { img:'photo', vid:'video', aud:'music', doc:'file-text', zip:'file-zip', gen:'file' }[k];
+}
+
+function fmtSz(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+
+function renderFiles() {
+  const fl = $('fl'); fl.innerHTML = '';
+  files.forEach((f, i) => {
+    const k = getKind(f.type);
+    const d = document.createElement('div');
+    d.className = 'frow';
+    d.innerHTML = `
+      <div class="ficon fi-${k}"><i class="ti ti-${getIco(k)}"></i></div>
+      <span class="fname" title="${f.name}">${f.name}</span>
+      <span class="fsize">${fmtSz(f.size)}</span>
+      <button class="frm" onclick="rmFile(${i})" aria-label="Remove ${f.name}"><i class="ti ti-x"></i></button>`;
+    fl.appendChild(d);
+  });
+}
+
+window.rmFile = i => { files.splice(i, 1); renderFiles(); };
+
+// ── Notifications ─────────────────────────────────────────
+function showNotif(msg, type) {
+  const n = $('notif'), ni = $('nicon');
+  n.className = `notif ${type}`;
+  ni.className = `ti ${type === 'ok' ? 'ti-circle-check' : type === 'info' ? 'ti-info-circle' : 'ti-alert-circle'}`;
+  $('nmsg').textContent = msg;
+  n.style.display = 'flex';
+  setTimeout(() => n.style.display = 'none', 5500);
+}
+
+function setConn(on, name = '') {
+  const b = $('connBadge');
+  if (on) { b.classList.add('connected'); $('connText').textContent = name || 'Connected'; }
+  else     { b.classList.remove('connected'); $('connText').textContent = 'Not connected'; }
+}
+
+function setProg(pct) {
+  const p = $('pg');
+  p.style.display = pct > 0 ? 'block' : 'none';
+  $('pgb').style.width = pct + '%';
+}
+
+function setLoading(on) {
+  $('sendBtn').disabled = on;
+  $('testBtn').disabled = on;
+  if (on) {
+    $('sendIcon').className = 'ti ti-loader spinning';
+    $('sendLbl').textContent = 'Publishing…';
+  } else {
+    updateSendButton();
+  }
+}
+
+// ── Media type ────────────────────────────────────────────
+function getMediaType(mime) {
+  if (mime.startsWith('image/')) return 'photo';
+  if (mime.startsWith('video/')) return 'video';
+  if (mime.startsWith('audio/')) return 'audio';
+  return 'document';
+}
+
+// ── Verify connection ─────────────────────────────────────
+async function testConn() {
+  const token = $('tok').value.trim();
+  if (!token) { showNotif('Enter your bot token first.', 'err'); return; }
+  $('testBtn').disabled = true;
+  $('testBtn').innerHTML = '<i class="ti ti-loader spinning"></i> Checking…';
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.description);
+    setConn(true, `@${d.result.username}`);
+    showNotif(`Connected as @${d.result.username} (${d.result.first_name}) — bot is active.`, 'ok');
+  } catch(e) {
+    setConn(false);
+    showNotif(`Connection failed: ${e.message}`, 'err');
+  } finally {
+    $('testBtn').disabled = false;
+    $('testBtn').innerHTML = '<i class="ti ti-wifi"></i> Verify connection';
+  }
+}
+
+// ── Core send logic ───────────────────────────────────────
+async function sendToTelegram(token, chatId, text, fileList, postOpts, parseMode) {
+  const base = `https://api.telegram.org/bot${token}`;
+  let msgId = null;
+
+  if (fileList.length === 0) {
+    const body = {
+      chat_id: chatId, text,
+      disable_notification: postOpts.silent,
+      disable_web_page_preview: postOpts.noPreview,
+      protect_content: postOpts.protect
+    };
+    if (parseMode) body.parse_mode = parseMode;
+    const r = await fetch(`${base}/sendMessage`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const d = await r.json(); if (!d.ok) throw new Error(d.description);
+    msgId = d.result.message_id;
+
+  } else if (fileList.length === 1) {
+    const f = fileList[0], mt = getMediaType(f.type);
+    const fd = new FormData();
+    fd.append('chat_id', chatId);
+    fd.append('disable_notification', postOpts.silent);
+    fd.append('protect_content', postOpts.protect);
+    if (text && parseMode) fd.append('parse_mode', parseMode);
+    if (text) fd.append('caption', text);
+    fd.append(mt, f, f.name);
+    const ep = { photo:'sendPhoto', video:'sendVideo', audio:'sendAudio', document:'sendDocument' }[mt];
+    const r = await fetch(`${base}/${ep}`, { method:'POST', body: fd });
+    const d = await r.json(); if (!d.ok) throw new Error(d.description);
+    msgId = d.result.message_id;
+
+  } else {
+    const media = [], fd = new FormData();
+    fd.append('chat_id', chatId);
+    fd.append('disable_notification', postOpts.silent);
+    fd.append('protect_content', postOpts.protect);
+    fileList.forEach((f, i) => {
+      const key = `f${i}`, mt = f.type.startsWith('image/') ? 'photo' : f.type.startsWith('video/') ? 'video' : 'document';
+      fd.append(key, f, f.name);
+      const item = { type: mt, media: `attach://${key}` };
+      if (i === 0 && text) { item.caption = text; if (parseMode) item.parse_mode = parseMode; }
+      media.push(item);
+    });
+    fd.append('media', JSON.stringify(media));
+    const r = await fetch(`${base}/sendMediaGroup`, { method:'POST', body: fd });
+    const d = await r.json(); if (!d.ok) throw new Error(d.description);
+    msgId = Array.isArray(d.result) ? d.result[0].message_id : d.result.message_id;
+  }
+
+  if (postOpts.pin && msgId) {
+    await fetch(`${base}/pinChatMessage`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: chatId, message_id: msgId, disable_notification: postOpts.silent })
+    });
+  }
+
+  return msgId;
+}
+
+// ── Publish now ───────────────────────────────────────────
+async function publishNow() {
+  const token = $('tok').value.trim();
+  const chatId = $('chid').value.trim();
+  const text = $('body').value.trim();
+  const pm = $('parseMode').value;
+  if (!token)  { showNotif('Bot token is required.', 'err'); return; }
+  if (!chatId) { showNotif('Channel ID or username is required.', 'err'); return; }
+  if (!text && files.length === 0) { showNotif('Add a message or attach at least one file.', 'err'); return; }
+
+  setLoading(true); setProg(20);
+  try {
+    await sendToTelegram(token, chatId, text, files, opts, pm);
+    setProg(100);
+    const extra = [];
+    if (files.length > 0) extra.push(`${files.length} file${files.length > 1 ? 's' : ''}`);
+    if (opts.pin) extra.push('pinned');
+    showNotif(`Published${extra.length ? ' with ' + extra.join(' & ') : ''} — your channel just got an update.`, 'ok');
+    $('body').value = ''; $('body').dispatchEvent(new Event('input'));
+    files = []; renderFiles(); $('fi').value = '';
+    setTimeout(() => setProg(0), 1400);
+  } catch(e) {
+    showNotif(`Publish failed: ${e.message}`, 'err'); setProg(0);
+  } finally {
+    setLoading(false);
+  }
+}
+
+// ── Schedule post ─────────────────────────────────────────
+function schedulePost() {
+  const token = $('tok').value.trim();
+  const chatId = $('chid').value.trim();
+  const text = $('body').value.trim();
+  const pm = $('parseMode').value;
+  const dateVal = $('schedDate').value;
+  const timeVal = $('schedTime').value;
+
+  if (!token)  { showNotif('Bot token is required.', 'err'); return; }
+  if (!chatId) { showNotif('Channel ID or username is required.', 'err'); return; }
+  if (!text && files.length === 0) { showNotif('Add a message or attach at least one file.', 'err'); return; }
+  if (!dateVal || !timeVal) { showNotif('Pick a date and time to schedule.', 'err'); return; }
+
+  const sendAt = new Date(`${dateVal}T${timeVal}`);
+  const delay = sendAt - Date.now();
+  if (delay <= 0) { showNotif('Scheduled time must be in the future.', 'err'); return; }
+
+  const id = Math.random().toString(36).slice(2);
+  const snapFiles = [...files];   // snapshot current file list
+  const snapOpts  = { ...opts };
+  const entry = { id, text, files: snapFiles, date: sendAt, token, chatId, opts: snapOpts, parseMode: pm, status: 'waiting' };
+
+  const timer = setTimeout(async () => {
+    const idx = scheduled.findIndex(s => s.id === id);
+    if (idx === -1) return;
+    scheduled[idx].status = 'sending';
+    renderPending();
+    try {
+      await sendToTelegram(token, chatId, text, snapFiles, snapOpts, pm);
+      scheduled[idx].status = 'sent';
+      renderPending();
+      showNotif(`Scheduled post sent at ${sendAt.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}.`, 'ok');
+      setTimeout(() => {
+        const i2 = scheduled.findIndex(s => s.id === id);
+        if (i2 !== -1) { scheduled.splice(i2, 1); renderPending(); }
+      }, 4000);
+    } catch(e) {
+      scheduled[idx].status = 'waiting';
+      renderPending();
+      showNotif(`Scheduled send failed: ${e.message}`, 'err');
+    }
+  }, delay);
+
+  entry.timer = timer;
+  scheduled.push(entry);
+  renderPending();
+
+  // Advance default schedule by 1h
+  const next = new Date(sendAt.getTime() + 3600000);
+  const pad = n => String(n).padStart(2,'0');
+  $('schedDate').value = `${next.getFullYear()}-${pad(next.getMonth()+1)}-${pad(next.getDate())}`;
+  $('schedTime').value = `${pad(next.getHours())}:00`;
+  updateSchedulePreview();
+
+  // Clear compose
+  $('body').value = ''; $('body').dispatchEvent(new Event('input'));
+  files = []; renderFiles(); $('fi').value = '';
+
+  const label = sendAt.toLocaleString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  showNotif(`Post scheduled for ${label}.`, 'ok');
+}
+
+// ── Main action button ────────────────────────────────────
+$('sendBtn').addEventListener('click', () => {
+  if (scheduleOpen) schedulePost();
+  else publishNow();
+});
+
+$('testBtn').addEventListener('click', testConn);
+</script>
+</body>
+</html>
